@@ -1,35 +1,13 @@
 import Navbar from "@/components/Navbar";
 import MangaCard from "@/components/MangaCard";
 import { Zap, TrendingUp, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { getAllManga } from "@/lib/data";
 
-const TRENDING_MANGA = [
-  {
-    id: "sky-boxer",
-    title: "Тэнгэрийн Боксчин (Sky Boxer)",
-    cover: "/covers/sky-boxer.png",
-    rating: 4.9,
-    chapters: 124,
-    category: "Action",
-  },
-  {
-    id: "shadow-blade",
-    title: "Сүүдрийн Ир (Shadow Blade)",
-    cover: "/covers/shadow-blade.png",
-    rating: 4.8,
-    chapters: 86,
-    category: "Adventure",
-  },
-  {
-    id: "urban-mage",
-    title: "Хотын Шидтэн (Urban Mage)",
-    cover: "/covers/urban-mage.png",
-    rating: 4.7,
-    chapters: 45,
-    category: "Fantasy",
-  },
-];
-
-export default function Home() {
+export default async function Home() {
+  const mangaData = await getAllManga();
+  const trendingManga = mangaData.slice(0, 6); // Just take the first few as trending
+  const featuredManga = trendingManga[0];
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -47,16 +25,16 @@ export default function Home() {
                     <span>ОНЦЛОХ МАНГА</span>
                   </div>
                   <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
-                    Тэнгэрийн <br />
-                    <span className="text-primary">Боксчин</span>
+                    {featuredManga?.title.split(' ')[0]} <br />
+                    <span className="text-primary">{featuredManga?.title.split(' ').slice(1).join(' ')}</span>
                   </h1>
                   <p className="max-w-md text-lg text-zinc-400">
-                    Хамгийн сүүлийн үеийн бүлэг болох 124-р бүлэг одоо бэлэн боллоо. Ширүүн тулаан, гайхалтай түүхийг бүү алдаарай.
+                    {featuredManga?.description.slice(0, 150)}...
                   </p>
                   <div className="flex flex-wrap gap-4">
-                    <button className="h-12 rounded-xl bg-primary px-8 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+                    <Link href={`/manga/${featuredManga?.slug}`} className="h-12 flex items-center rounded-xl bg-primary px-8 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
                       УНШИЖ ЭХЛЭХ
-                    </button>
+                    </Link>
                     <button className="h-12 rounded-xl bg-white/5 border border-white/10 px-8 text-sm font-bold text-white transition-all hover:bg-white/10">
                       ДЭЛГЭРЭНГҮЙ
                     </button>
@@ -64,7 +42,7 @@ export default function Home() {
                 </div>
                 <div className="hidden md:block relative h-[400px] w-full">
                   <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <img src="/covers/sky-boxer.png" className="w-full h-full object-cover" alt="Sky Boxer" />
+                    <img src={featuredManga?.cover} className="w-full h-full object-cover" alt={featuredManga?.title} />
                   </div>
                 </div>
               </div>
@@ -86,12 +64,8 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {TRENDING_MANGA.map((manga) => (
-                <MangaCard key={manga.id} {...manga} />
-              ))}
-              {/* Duplicate cards to fill the Grid for visual effect */}
-              {TRENDING_MANGA.map((manga) => (
-                <MangaCard key={`${manga.id}-2`} {...manga} />
+              {trendingManga.map((manga) => (
+                <MangaCard key={manga.id} id={manga.slug} title={manga.title} cover={manga.cover} rating={manga.rating} chapters={manga.chapters_count} category={manga.category} />
               ))}
             </div>
           </div>

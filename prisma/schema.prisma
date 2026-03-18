@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Manga {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  cover         String
+  banner        String
+  rating        Float     @default(0.0)
+  chapters_count Int       @default(0)
+  category      String
+  status        String    // "Үргэлжилж буй" | "Дууссан"
+  author        String
+  description   String
+  chapters      Chapter[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  number    Int
+  title     String
+  date      String   // Using String for now as per mock data
+  mangaId   String
+  manga     Manga    @relation(fields: [mangaId], references: [id])
+  pages     Page[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([mangaId, number])
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  order     Int
+  chapterId String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  createdAt DateTime @default(now())
+}

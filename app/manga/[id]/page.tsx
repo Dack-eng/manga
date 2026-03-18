@@ -1,4 +1,4 @@
-import { MOCK_MANGA_DATA } from "@/lib/data";
+import { getMangaBySlug } from "@/lib/data";
 import Navbar from "@/components/Navbar";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -6,7 +6,7 @@ import { Star, Clock, BookOpen, Play, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default async function MangaDetailPage({ params }: { params: { id: string } }) {
-  const manga = MOCK_MANGA_DATA[params.id];
+  const manga = await getMangaBySlug(params.id);
 
   if (!manga) {
     notFound();
@@ -90,14 +90,14 @@ export default async function MangaDetailPage({ params }: { params: { id: string
         <div className="mt-16 space-y-6">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <h2 className="text-2xl font-bold text-white">Бүлгүүд</h2>
-            <span className="text-sm font-medium text-zinc-500">Нийт {manga.chapters.length} бүлэг</span>
+            <span className="text-sm font-medium text-zinc-500">Нийт {manga.chapters?.length || 0} бүлэг</span>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {manga.chapters.map((chapter) => (
+            {manga.chapters?.map((chapter) => (
               <Link
                 key={chapter.id}
-                href={`/reader/${manga.id}/${chapter.id}`}
+                href={`/reader/${manga.slug}/${chapter.number}`}
                 className="group flex items-center justify-between rounded-xl bg-zinc-900/50 p-4 border border-white/5 transition-all hover:bg-zinc-800 hover:border-white/10"
               >
                 <div className="flex items-center gap-4">
