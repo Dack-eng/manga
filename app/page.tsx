@@ -6,8 +6,8 @@ import { getAllManga } from "@/lib/data";
 
 export default async function Home() {
   const mangaData = await getAllManga();
-  const trendingManga = mangaData.slice(0, 6); // Just take the first few as trending
-  const featuredManga = trendingManga[0];
+  const trendingManga = mangaData.slice(0, 6) || []; 
+  const featuredManga = trendingManga.length > 0 ? trendingManga[0] : null;
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -25,16 +25,18 @@ export default async function Home() {
                     <span>ОНЦЛОХ МАНГА</span>
                   </div>
                   <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl">
-                    {featuredManga?.title.split(' ')[0]} <br />
-                    <span className="text-primary">{featuredManga?.title.split(' ').slice(1).join(' ')}</span>
+                    {featuredManga?.title ? featuredManga.title.split(' ')[0] : "MANGA"} <br />
+                    <span className="text-primary">{featuredManga?.title ? featuredManga.title.split(' ').slice(1).join(' ') : "MN"}</span>
                   </h1>
                   <p className="max-w-md text-lg text-zinc-400">
-                    {featuredManga?.description.slice(0, 150)}...
+                    {featuredManga?.description ? featuredManga.description.slice(0, 150) : "Хамгийн сүүлийн үеийн мангануудыг эндээс уншаарай."}...
                   </p>
                   <div className="flex flex-wrap gap-4">
-                    <Link href={`/manga/${featuredManga?.slug}`} className="h-12 flex items-center rounded-xl bg-primary px-8 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
-                      УНШИЖ ЭХЛЭХ
-                    </Link>
+                    {featuredManga && (
+                      <Link href={`/manga/${featuredManga.slug}`} className="h-12 flex items-center rounded-xl bg-primary px-8 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+                        УНШИЖ ЭХЛЭХ
+                      </Link>
+                    )}
                     <button className="h-12 rounded-xl bg-white/5 border border-white/10 px-8 text-sm font-bold text-white transition-all hover:bg-white/10">
                       ДЭЛГЭРЭНГҮЙ
                     </button>
@@ -42,7 +44,11 @@ export default async function Home() {
                 </div>
                 <div className="hidden md:block relative h-[400px] w-full">
                   <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                    <img src={featuredManga?.cover} className="w-full h-full object-cover" alt={featuredManga?.title} />
+                    {featuredManga?.cover ? (
+                      <img src={featuredManga.cover} className="w-full h-full object-cover" alt={featuredManga.title} />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-800" />
+                    )}
                   </div>
                 </div>
               </div>
