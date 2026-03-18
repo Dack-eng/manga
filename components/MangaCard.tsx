@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { useLanguage } from "./LanguageProvider";
 
 interface MangaCardProps {
   id: string;
@@ -12,6 +15,8 @@ interface MangaCardProps {
 }
 
 export default function MangaCard({ id, title, cover, rating, chapters, category }: MangaCardProps) {
+  const { t } = useLanguage();
+  
   return (
     <Link href={`/manga/${id}`} className="group relative block w-full overflow-hidden rounded-xl bg-card manga-card-hover">
       <div className="aspect-[3/4] overflow-hidden">
@@ -33,8 +38,8 @@ export default function MangaCard({ id, title, cover, rating, chapters, category
         <div className="text-xs font-semibold uppercase tracking-wider text-primary mb-1">{category}</div>
         <h3 className="line-clamp-2 text-sm font-bold leading-tight text-white">{title}</h3>
         <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-zinc-300">
-          <span>{chapters} Бүлэг</span>
-          <span className="rounded bg-white/10 px-1.5 py-0.5">Шинэ</span>
+          <span>{chapters} {t('chapters')}</span>
+          <span className="rounded bg-white/10 px-1.5 py-0.5">{t('new')}</span>
         </div>
       </div>
     </Link>

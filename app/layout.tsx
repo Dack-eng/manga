@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Хамгийн сүүлийн үеийн мангануудыг монгол хэлээр уншаарай.",
 };
 
+import { LanguageProvider } from "@/components/LanguageProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );
