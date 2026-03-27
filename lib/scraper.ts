@@ -26,8 +26,15 @@ export async function autoIngestManga(mangaId: string) {
       : "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=500";
 
     const title = attr.title.en || attr.title.ja || Object.values(attr.title)[0];
-    const slug = attr.altTitles?.find((t: any) => t.en)?.en?.toLowerCase().replace(/ /g, "-") || 
-                 title.toLowerCase().replace(/ /g, "-") + "-" + mangaId.slice(0, 5);
+    
+    // Slug-ийг цэвэрлэх (тусгай тэмдэгтүүдийг устгах)
+    const sanitizeSlug = (str: string) => 
+      str.toLowerCase()
+         .replace(/[^a-z0-9\s-]/g, "") // Зөвхөн үсэг, тоо, зай, зураас үлдээх
+         .trim()
+         .replace(/\s+/g, "-"); // Зайг зураасаар солих
+
+    const slug = attr.altTitles?.find((t: any) => t.en)?.en ? sanitizeSlug(attr.altTitles.find((t: any) => t.en).en) : sanitizeSlug(title);
 
     const scrapedData = {
       title: title as string,
