@@ -20,11 +20,11 @@ export default function MangaCard({ id, title, cover, rating, chapters, category
   return (
     <Link href={`/manga/${id}`} className="group relative block w-full overflow-hidden rounded-xl bg-card manga-card-hover">
       <div className="aspect-[3/4] overflow-hidden">
-        <Image
+        <img
           src={cover}
           alt={title}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          referrerPolicy="no-referrer-when-downgrade"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>

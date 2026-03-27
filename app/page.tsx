@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import Navbar from "@/components/Navbar";
 import MangaCard from "@/components/MangaCard";
@@ -64,7 +65,12 @@ export default function Home() {
                 <div className="hidden md:block relative h-[400px] w-full">
                   <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
                     {featuredManga?.cover ? (
-                      <img src={featuredManga.cover} className="w-full h-full object-cover" alt={featuredManga.title} />
+                      <img 
+                        src={featuredManga.cover} 
+                        className="w-full h-full object-cover" 
+                        alt={featuredManga.title} 
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
                     ) : (
                       <div className="w-full h-full bg-zinc-800" />
                     )}

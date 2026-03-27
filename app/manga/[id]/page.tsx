@@ -1,9 +1,10 @@
 import { getMangaBySlug } from "@/lib/data";
 import Navbar from "@/components/Navbar";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { Star, Clock, BookOpen, Play, ChevronRight } from "lucide-react";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function MangaDetailPage({ params }: { params: { id: string } }) {
   const manga = await getMangaBySlug(params.id);
@@ -18,11 +19,11 @@ export default async function MangaDetailPage({ params }: { params: { id: string
       
       {/* Banner Section */}
       <div className="relative h-[300px] w-full overflow-hidden md:h-[450px]">
-        <Image
+        <img
           src={manga.banner}
           alt={manga.title}
-          fill
-          className="object-cover opacity-30 blur-sm"
+          className="absolute inset-0 h-full w-full object-cover opacity-30 blur-sm"
+          referrerPolicy="no-referrer-when-downgrade"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
       </div>
@@ -32,11 +33,11 @@ export default async function MangaDetailPage({ params }: { params: { id: string
           {/* Cover Image */}
           <div className="relative mx-auto w-64 flex-shrink-0 md:mx-0">
             <div className="aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
-              <Image
+              <img
                 src={manga.cover}
                 alt={manga.title}
-                fill
-                className="object-cover"
+                className="h-full w-full object-cover"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </div>
