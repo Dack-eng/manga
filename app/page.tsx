@@ -15,10 +15,15 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchData() {
-      const mangaData = await getAllManga();
-      const trending = mangaData.slice(0, 6) || [];
-      setTrendingManga(trending);
-      setFeaturedManga(trending.length > 0 ? trending[0] : null);
+      try {
+        const response = await fetch("/api/manga");
+        const mangaData = await response.json();
+        const trending = mangaData.slice(0, 6) || [];
+        setTrendingManga(trending);
+        setFeaturedManga(trending.length > 0 ? trending[0] : null);
+      } catch (error) {
+        console.error("Data fetching error:", error);
+      }
     }
     fetchData();
   }, []);
