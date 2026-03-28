@@ -17,12 +17,6 @@ interface Manga {
   title: string;
 }
 
-interface Page {
-  id: string;
-  imageUrl: string;
-  order: number;
-}
-
 interface ReaderClientProps {
   manga: Manga;
   chapter: Chapter;

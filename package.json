@@ -7,16 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "scrape": "npx tsx scripts/scrape.ts"
+    "scrape": "npx tsx scripts/scrape.ts",
+    "db:seed": "npx tsx scripts/seed.ts",
+    "db:clean": "npx tsx scripts/clean.ts",
+    "db:check": "npx tsx scripts/check-db.ts"
   },
   "dependencies": {
-    "@libsql/client": "^0.17.0",
-    "@prisma/adapter-libsql": "^7.5.0",
-    "@prisma/client": "^6.2.1",
     "dotenv": "^17.3.1",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
-    "prisma": "^6.2.1",
+    "pg": "^8.20.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -27,10 +27,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "supabase": "^2.84.4",
     "tailwindcss": "^4",
     "typescript": "^5"
-  },
-  "prisma": {
-    "seed": "npx tsx scripts/seed.ts"
   }
 }

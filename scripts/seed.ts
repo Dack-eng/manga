@@ -1,9 +1,22 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
+import { closePool } from "../lib/db";
+import { upsertChapter, upsertManga } from "../lib/data";
 
-const prisma = new PrismaClient();
-
-const MOCK_MANGA_DATA: any = {
+const MOCK_MANGA_DATA: Record<
+  string,
+  {
+    title: string;
+    cover: string;
+    banner: string;
+    rating: number;
+    chapters_count: number;
+    category: string;
+    status: string;
+    author: string;
+    description: string;
+    chapters: Array<{ number: number; title: string; date: string }>;
+  }
+> = {
   "sky-boxer": {
     title: "Тэнгэрийн Боксчин (Sky Boxer)",
     cover: "/covers/sky-boxer.png",
@@ -58,40 +71,27 @@ async function main() {
   for (const slug in MOCK_MANGA_DATA) {
     const mangaData = MOCK_MANGA_DATA[slug];
     
-    const manga = await prisma.manga.upsert({
-      where: { slug: slug },
-      update: {},
-      create: {
-        slug: slug,
-        title: mangaData.title,
-        cover: mangaData.cover,
-        banner: mangaData.banner,
-        rating: mangaData.rating,
-        chapters_count: mangaData.chapters_count,
-        category: mangaData.category,
-        status: mangaData.status,
-        author: mangaData.author,
-        description: mangaData.description,
-      },
+    const manga = await upsertManga({
+      slug,
+      title: mangaData.title,
+      cover: mangaData.cover,
+      banner: mangaData.banner,
+      rating: mangaData.rating,
+      chapters_count: mangaData.chapters_count,
+      category: mangaData.category,
+      status: mangaData.status,
+      author: mangaData.author,
+      description: mangaData.description,
     });
 
     console.log(`Created/Updated manga: ${manga.title}`);
 
     for (const chapterData of mangaData.chapters) {
-      await prisma.chapter.upsert({
-        where: {
-          mangaId_number: {
-            mangaId: manga.id,
-            number: chapterData.number,
-          },
-        },
-        update: {},
-        create: {
-          number: chapterData.number,
-          title: chapterData.title,
-          date: chapterData.date,
-          mangaId: manga.id,
-        },
+      await upsertChapter({
+        number: chapterData.number,
+        title: chapterData.title,
+        date: chapterData.date,
+        mangaId: manga.id,
       });
     }
   }
@@ -105,5 +105,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await closePool();
   });

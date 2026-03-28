@@ -13,6 +13,11 @@ export default async function MangaDetailPage({ params }: { params: { id: string
     notFound();
   }
 
+  const startChapterNumber =
+    manga.chapters?.[manga.chapters.length - 1]?.number ??
+    manga.chapters?.[0]?.number ??
+    1;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -76,7 +81,7 @@ export default async function MangaDetailPage({ params }: { params: { id: string
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 md:justify-start">
-              <Link href={`/reader/${manga.id}/1`} className="flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+              <Link href={`/reader/${manga.slug}/${startChapterNumber}`} className="flex h-12 items-center gap-2 rounded-xl bg-primary px-8 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
                 <Play className="h-4 w-4 fill-white" />
                 УНШИЖ ЭХЛЭХ
               </Link>

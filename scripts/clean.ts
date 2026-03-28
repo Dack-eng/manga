@@ -1,14 +1,13 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import "dotenv/config";
+import { clearDatabase } from "../lib/data";
+import { closePool } from "../lib/db";
 
 async function clean() {
   console.log("=== Өгөгдлийн санг цэвэрлэж байна ===");
-  await prisma.page.deleteMany({});
-  await prisma.chapter.deleteMany({});
-  await prisma.manga.deleteMany({});
+  await clearDatabase();
   console.log("=== Цэвэрлэгээ дууслаа ===");
 }
 
 clean()
-  .catch(e => console.error(e))
-  .finally(() => prisma.$disconnect());
+  .catch((error) => console.error(error))
+  .finally(() => closePool());

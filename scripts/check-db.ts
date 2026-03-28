@@ -1,15 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import "dotenv/config";
+import { closePool } from "../lib/db";
+import { getDatabaseSummary } from "../lib/data";
 
 async function check() {
-  const mangaCount = await prisma.manga.count();
-  const chapterCount = await prisma.chapter.count();
+  const { mangaCount, chapterCount, titles } = await getDatabaseSummary();
   console.log(`\n=== Баазын мэдээлэл ===`);
   console.log(`Нийт Манга: ${mangaCount}`);
   console.log(`Нийт Бүлэг: ${chapterCount}`);
-  
-  const mangas = await prisma.manga.findMany({ select: { title: true } });
-  console.log("Жагсаалт:", mangas.map(m => m.title).join(", "));
+
+  console.log("Жагсаалт:", titles.join(", "));
 }
 
-check().finally(() => prisma.$disconnect());
+check().finally(() => closePool());

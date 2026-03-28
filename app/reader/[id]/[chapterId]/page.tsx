@@ -15,7 +15,7 @@ export default async function ReaderPage({ params }: { params: { id: string, cha
   // In a real app, pages come from data.pages. 
   // For demo, we still use mock images if pages are empty.
   const pages = data.pages.length > 0 
-    ? data.pages.map((p: any) => p.imageUrl) 
+    ? data.pages.map((page) => page.imageUrl) 
     : [manga.cover, manga.banner, manga.cover];
 
   // Fetch adjacent chapters for navigation
@@ -26,7 +26,7 @@ export default async function ReaderPage({ params }: { params: { id: string, cha
   return (
     <ReaderClient 
       manga={manga} 
-      chapter={chapter as any} 
+      chapter={chapter} 
       pages={pages}
       nextChapter={nextChapter ? { id: nextChapter.id, number: nextChapter.number } : null}
       prevChapter={prevChapter ? { id: prevChapter.id, number: prevChapter.number } : null}

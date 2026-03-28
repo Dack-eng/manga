@@ -3,22 +3,22 @@ export const dynamic = "force-dynamic";
 
 import Navbar from "@/components/Navbar";
 import MangaCard from "@/components/MangaCard";
-import { Zap, TrendingUp, Sparkles } from "lucide-react";
+import { TrendingUp, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { getAllManga } from "@/lib/data";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
+import type { Manga } from "@/lib/data";
 
 export default function Home() {
-  const { t } = useLanguage();
-  const [trendingManga, setTrendingManga] = useState<any[]>([]);
-  const [featuredManga, setFeaturedManga] = useState<any>(null);
+  const { t, language } = useLanguage();
+  const [trendingManga, setTrendingManga] = useState<Manga[]>([]);
+  const [featuredManga, setFeaturedManga] = useState<Manga | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await fetch("/api/manga");
-        const mangaData = await response.json();
+        const mangaData = (await response.json()) as Manga[];
         const trending = mangaData.slice(0, 6) || [];
         setTrendingManga(trending);
         setFeaturedManga(trending.length > 0 ? trending[0] : null);
@@ -105,14 +105,14 @@ export default function Home() {
 
       <footer className="border-t border-border bg-muted/30 py-12 px-4">
         <div className="mx-auto max-w-7xl text-center">
-          <div className="text-2xl font-bold tracking-tighter text-primary mb-4 italic uppercase">MANGA {useLanguage().language}</div>
+          <div className="text-2xl font-bold tracking-tighter text-primary mb-4 italic uppercase">MANGA {language}</div>
           <p className="text-sm text-zinc-500 mb-6">{t('footerDesc')}</p>
           <div className="flex justify-center gap-8 text-xs font-medium text-zinc-400">
             <a href="#" className="hover:text-primary">{t('aboutUs')}</a>
             <a href="#" className="hover:text-primary">{t('contactUs')}</a>
             <a href="#" className="hover:text-primary">{t('privacy')}</a>
           </div>
-          <div className="mt-8 text-[10px] text-zinc-600">© 2026 MANGA {useLanguage().language.toUpperCase()}. {t('copyright')}</div>
+          <div className="mt-8 text-[10px] text-zinc-600">© 2026 MANGA {language.toUpperCase()}. {t('copyright')}</div>
         </div>
       </footer>
     </div>

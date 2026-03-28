@@ -1,4 +1,6 @@
+import "dotenv/config";
 import { autoIngestManga } from "../lib/scraper";
+import { closePool } from "../lib/db";
 
 const POPULAR_TITLES = [
   "One Piece",
@@ -31,4 +33,4 @@ async function runScraper() {
   console.log("\n=== Бүх өгөгдөл амжилттай орлоо ===");
 }
 
-runScraper();
+runScraper().finally(() => closePool());

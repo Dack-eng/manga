@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   try {
     const manga = await autoIngestManga(externalId);
     return NextResponse.json({ success: true, manga });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, error: "Өгөгдөл оруулахад алдаа гарлаа" }, { status: 500 });
   }
 }

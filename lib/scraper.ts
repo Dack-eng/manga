@@ -1,4 +1,60 @@
-import { prisma } from "./prisma";
+import { upsertChapter, upsertManga, updateMangaChapterCount } from "./data";
+
+interface MangaDexLocalizedText {
+  en?: string;
+  ja?: string;
+  [key: string]: string | undefined;
+}
+
+interface MangaDexAltTitle {
+  en?: string;
+}
+
+interface MangaDexTag {
+  attributes?: {
+    name?: {
+      en?: string;
+    };
+  };
+}
+
+interface MangaDexRelationship {
+  type: string;
+  attributes?: {
+    fileName?: string;
+  };
+}
+
+interface MangaDexMangaAttributes {
+  title: MangaDexLocalizedText;
+  altTitles?: MangaDexAltTitle[];
+  tags?: MangaDexTag[];
+  status?: string;
+  description: MangaDexLocalizedText;
+}
+
+interface MangaDexMangaResponse {
+  result: string;
+  errors?: unknown;
+  data: {
+    attributes: MangaDexMangaAttributes;
+    relationships: MangaDexRelationship[];
+  };
+}
+
+interface MangaDexFeedChapter {
+  attributes: {
+    chapter: string;
+    title?: string;
+    publishAt: string;
+  };
+}
+
+interface MangaDexFeedResponse {
+  result: string;
+  total: number;
+  data: MangaDexFeedChapter[];
+}
 
 /**
  * MangaDex API-аас бодит өгөгдөл татах функц.
@@ -9,7 +65,7 @@ export async function autoIngestManga(mangaId: string) {
   try {
     // 1. Манга мэдээлэл авах
     const mangaRes = await fetch(`https://api.mangadex.org/manga/${mangaId}?includes[]=cover_art`);
-    const mangaInfo = await mangaRes.json();
+    const mangaInfo = (await mangaRes.json()) as MangaDexMangaResponse;
     
     if (mangaInfo.result !== "ok") {
       throw new Error(`MangaDex error: ${JSON.stringify(mangaInfo.errors)}`);
@@ -19,13 +75,17 @@ export async function autoIngestManga(mangaId: string) {
     const rels = mangaInfo.data.relationships;
     
     // Ковер зураг олох
-    const coverRel = rels.find((r: any) => r.type === "cover_art");
+    const coverRel = rels.find((relationship) => relationship.type === "cover_art");
     const coverFileName = coverRel?.attributes?.fileName;
     const coverUrl = coverFileName 
       ? `https://uploads.mangadex.org/covers/${mangaId}/${coverFileName}.512.jpg`
       : "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=500";
 
-    const title = attr.title.en || attr.title.ja || Object.values(attr.title)[0];
+    const title =
+      attr.title.en ||
+      attr.title.ja ||
+      Object.values(attr.title).find((value): value is string => Boolean(value)) ||
+      "Untitled Manga";
     
     // Slug-ийг цэвэрлэх (тусгай тэмдэгтүүдийг устгах)
     const sanitizeSlug = (str: string) => 
@@ -34,11 +94,12 @@ export async function autoIngestManga(mangaId: string) {
          .trim()
          .replace(/\s+/g, "-"); // Зайг зураасаар солих
 
-    const slug = attr.altTitles?.find((t: any) => t.en)?.en ? sanitizeSlug(attr.altTitles.find((t: any) => t.en).en) : sanitizeSlug(title);
+    const englishAltTitle = attr.altTitles?.find((altTitle) => altTitle.en)?.en;
+    const slug = sanitizeSlug(englishAltTitle || title);
 
     const scrapedData = {
-      title: title as string,
-      slug: slug as string,
+      title,
+      slug,
       cover: coverUrl,
       banner: coverUrl, // МангаДекс дээр тусдаа баннер байхгүй бол ковер ашиглая
       rating: 4.5,
@@ -50,17 +111,13 @@ export async function autoIngestManga(mangaId: string) {
     };
 
     // 2. Өгөгдлийн сан руу хадгалах
-    const manga = await prisma.manga.upsert({
-      where: { slug: scrapedData.slug },
-      update: scrapedData,
-      create: scrapedData,
-    });
+    const manga = await upsertManga(scrapedData);
 
     console.log(`Манга хадгалагдлаа: ${manga.title}`);
 
     // 3. Сүүлийн 5 бүлгийг авах
     const feedRes = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=5&translatedLanguage[]=en&order[chapter]=desc`);
-    const feedData = await feedRes.json();
+    const feedData = (await feedRes.json()) as MangaDexFeedResponse;
 
     if (feedData.result === "ok") {
       for (const chapter of feedData.data) {
@@ -73,28 +130,16 @@ export async function autoIngestManga(mangaId: string) {
           continue;
         }
 
-        await prisma.chapter.upsert({
-          where: {
-            mangaId_number: {
-              mangaId: manga.id,
-              number: chapterNumber,
-            },
-          },
-          update: {},
-          create: {
-            number: chapterNumber,
-            title: cAttr.title || `Chapter ${cAttr.chapter}`,
-            date: new Date(cAttr.publishAt).toISOString().split('T')[0],
-            mangaId: manga.id,
-          },
+        await upsertChapter({
+          number: chapterNumber,
+          title: cAttr.title || `Chapter ${cAttr.chapter}`,
+          date: new Date(cAttr.publishAt).toISOString().split("T")[0],
+          mangaId: manga.id,
         });
       }
       
       // Бүлгийн тоог шинэчлэх
-      await prisma.manga.update({
-        where: { id: manga.id },
-        data: { chapters_count: feedData.total }
-      });
+      await updateMangaChapterCount(manga.id, feedData.total);
     }
 
     return manga;

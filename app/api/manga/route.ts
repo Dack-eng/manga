@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const manga = await getAllManga();
     return NextResponse.json(manga);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Манга мэдээллийг татахад алдаа гарлаа" }, { status: 500 });
   }
 }
