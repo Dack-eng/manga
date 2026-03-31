@@ -2,9 +2,10 @@ import { getChapter, getMangaBySlug } from "@/lib/data";
 import { notFound } from "next/navigation";
 import ReaderClient from "./ReaderClient";
 
-export default async function ReaderPage({ params }: { params: { id: string, chapterId: string } }) {
-  const chapterNumber = parseInt(params.chapterId);
-  const data = await getChapter(params.id, chapterNumber);
+export default async function ReaderPage({ params }: { params: Promise<{ id: string, chapterId: string }> }) {
+  const { id, chapterId } = await params;
+  const chapterNumber = parseInt(chapterId);
+  const data = await getChapter(id, chapterNumber);
 
   if (!data) {
     notFound();
