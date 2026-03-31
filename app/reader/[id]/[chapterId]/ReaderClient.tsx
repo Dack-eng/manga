@@ -81,6 +81,7 @@ export default function ReaderClient({ manga, chapter, pages, nextChapter, prevC
                 alt={`Page ${index + 1}`}
                 className="w-full h-auto select-none"
                 loading="lazy"
+                referrerPolicy="no-referrer"
               />
             </div>
           ))}

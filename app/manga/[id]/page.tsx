@@ -29,7 +29,7 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
           src={manga.banner}
           alt={manga.title}
           className="absolute inset-0 h-full w-full object-cover opacity-30 blur-sm"
-          referrerPolicy="no-referrer-when-downgrade"
+          referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
       </div>
@@ -43,7 +43,7 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
                 src={manga.cover}
                 alt={manga.title}
                 className="h-full w-full object-cover"
-                referrerPolicy="no-referrer-when-downgrade"
+                referrerPolicy="no-referrer"
               />
             </div>
           </div>

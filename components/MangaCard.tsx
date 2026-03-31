@@ -23,7 +23,7 @@ export default function MangaCard({ id, title, cover, rating, chapters, category
           src={cover}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-          referrerPolicy="no-referrer-when-downgrade"
+          referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>

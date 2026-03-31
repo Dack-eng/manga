@@ -69,7 +69,7 @@ export default function Home() {
                         src={featuredManga.cover} 
                         className="w-full h-full object-cover" 
                         alt={featuredManga.title} 
-                        referrerPolicy="no-referrer-when-downgrade"
+                        referrerPolicy="no-referrer"
                       />
                     ) : (
                       <div className="w-full h-full bg-zinc-800" />
