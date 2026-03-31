@@ -5,7 +5,6 @@ import Navbar from "@/components/Navbar";
 import MangaCard from "@/components/MangaCard";
 import { TrendingUp, Sparkles } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import type { Manga } from "@/lib/data";
@@ -66,13 +65,11 @@ export default function Home() {
                 <div className="hidden md:block relative h-[400px] w-full">
                   <div className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
                     {featuredManga?.cover ? (
-                      <Image 
+                      <img 
                         src={featuredManga.cover} 
-                        fill
-                        className="object-cover" 
+                        className="w-full h-full object-cover" 
                         alt={featuredManga.title} 
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        priority
+                        referrerPolicy="no-referrer-when-downgrade"
                       />
                     ) : (
                       <div className="w-full h-full bg-zinc-800" />
