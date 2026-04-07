@@ -1,4 +1,4 @@
-import { upsertChapter, upsertManga, updateMangaChapterCount } from "./data";
+import { upsertChapter, upsertManga, updateMangaChapterCount, upsertPages } from "./data";
 
 interface MangaDexLocalizedText {
   en?: string;
@@ -43,6 +43,7 @@ interface MangaDexMangaResponse {
 }
 
 interface MangaDexFeedChapter {
+  id: string;
   attributes: {
     chapter: string;
     title?: string;
@@ -131,12 +132,33 @@ export async function autoIngestManga(mangaId: string, language: string = "en") 
           continue;
         }
 
-        await upsertChapter({
+        const dbChapter = await upsertChapter({
           number: chapterNumber,
           title: cAttr.title || `Chapter ${cAttr.chapter}`,
           date: new Date(cAttr.publishAt).toISOString().split("T")[0],
           mangaId: manga.id,
         });
+
+        // 4. Бүлгийн хуудаснуудыг татах
+        try {
+          const serverRes = await fetch(`https://api.mangadex.org/at-home/server/${chapter.id}`);
+          const serverData = await serverRes.json();
+          if (serverData.result === "ok") {
+            const pageUrls = serverData.chapter.data.map(
+              (filename: string) => `${serverData.baseUrl}/data/${serverData.chapter.hash}/${filename}`
+            );
+            
+            if (pageUrls.length > 0) {
+              await upsertPages({
+                chapterId: dbChapter.id,
+                pages: pageUrls,
+              });
+              console.log(`  - ${dbChapter.title} (${pageUrls.length} хуудас татагдлаа)`);
+            }
+          }
+        } catch(e) {
+          console.error(`Хуудас татахад алдаа гарлаа: ${e}`);
+        }
       }
       
       // Бүлгийн тоог шинэчлэх

@@ -270,6 +270,28 @@ export async function upsertChapter(input: ChapterInput) {
   return chapter;
 }
 
+export interface PageInput {
+  chapterId: string;
+  pages: string[];
+}
+
+export async function upsertPages(input: PageInput) {
+  await withTransaction(async (db) => {
+    // Эхлээд хуучин хуудаснуудыг устгах
+    await queryRows(`DELETE FROM "Page" WHERE "chapterId" = $1`, [input.chapterId], db);
+    
+    // Шинэ хуудаснуудыг нэмэх
+    for (let i = 0; i < input.pages.length; i++) {
+        await queryRows(
+          `INSERT INTO "Page" ("id", "imageUrl", "order", "chapterId")
+           VALUES ($1, $2, $3, $4)`,
+           [randomUUID(), input.pages[i], i, input.chapterId],
+           db
+        );
+    }
+  });
+}
+
 export async function updateMangaChapterCount(mangaId: string, chaptersCount: number) {
   await queryRows(
     `UPDATE "Manga"
