@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, Settings, List, ArrowUp } from "lucide-react";
 
 interface Chapter {
@@ -76,10 +77,15 @@ export default function ReaderClient({ manga, chapter, pages, nextChapter, prevC
         <div className="flex flex-col">
           {pages.map((page, index) => (
             <div key={index} className="relative w-full">
-              <img
+              <Image
                 src={page}
                 alt={`Page ${index + 1}`}
-                className="w-full h-auto select-none"
+                width={0}
+                height={0}
+                sizes="100vw"
+                style={{ width: '100%', height: 'auto' }}
+                unoptimized
+                className="select-none"
                 loading="lazy"
                 referrerPolicy="no-referrer"
               />

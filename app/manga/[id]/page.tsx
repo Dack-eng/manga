@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import { notFound } from "next/navigation";
 import { Star, Clock, BookOpen, Play, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +26,12 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
       
       {/* Banner Section */}
       <div className="relative h-[300px] w-full overflow-hidden md:h-[450px]">
-        <img
+        <Image
           src={manga.banner}
           alt={manga.title}
-          className="absolute inset-0 h-full w-full object-cover opacity-30 blur-sm"
+          fill
+          unoptimized
+          className="object-cover opacity-30 blur-sm"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
@@ -38,11 +41,13 @@ export default async function MangaDetailPage({ params }: { params: Promise<{ id
         <div className="flex flex-col gap-8 md:flex-row md:items-start">
           {/* Cover Image */}
           <div className="relative mx-auto w-64 flex-shrink-0 md:mx-0">
-            <div className="aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
-              <img
+            <div className="aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 shadow-2xl relative">
+              <Image
                 src={manga.cover}
                 alt={manga.title}
-                className="h-full w-full object-cover"
+                fill
+                unoptimized
+                className="object-cover"
                 referrerPolicy="no-referrer"
               />
             </div>
