@@ -59,8 +59,8 @@ interface MangaDexFeedResponse {
 /**
  * MangaDex API-аас бодит өгөгдөл татах функц.
  */
-export async function autoIngestManga(mangaId: string) {
-  console.log(`MangaDex-ээс мэдээлэл татаж байна: ${mangaId}`);
+export async function autoIngestManga(mangaId: string, language: string = "en") {
+  console.log(`MangaDex-ээс мэдээлэл татаж байна: ${mangaId} (${language})`);
 
   try {
     // 1. Манга мэдээлэл авах
@@ -95,10 +95,11 @@ export async function autoIngestManga(mangaId: string) {
          .replace(/\s+/g, "-"); // Зайг зураасаар солих
 
     const englishAltTitle = attr.altTitles?.find((altTitle) => altTitle.en)?.en;
-    const slug = sanitizeSlug(englishAltTitle || title);
+    const baseSlug = sanitizeSlug(englishAltTitle || title);
+    const slug = `${baseSlug}-${language}`;
 
     const scrapedData = {
-      title,
+      title: `${title} (${language.toUpperCase()})`,
       slug,
       cover: coverUrl,
       banner: coverUrl, // МангаДекс дээр тусдаа баннер байхгүй бол ковер ашиглая
@@ -115,8 +116,8 @@ export async function autoIngestManga(mangaId: string) {
 
     console.log(`Манга хадгалагдлаа: ${manga.title}`);
 
-    // 3. Сүүлийн 5 бүлгийг авах
-    const feedRes = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=5&translatedLanguage[]=en&order[chapter]=desc`);
+    // 3. Сүүлийн бүлгүүдийг авах
+    const feedRes = await fetch(`https://api.mangadex.org/manga/${mangaId}/feed?limit=30&translatedLanguage[]=${language}&order[chapter]=asc`);
     const feedData = (await feedRes.json()) as MangaDexFeedResponse;
 
     if (feedData.result === "ok") {

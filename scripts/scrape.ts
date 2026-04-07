@@ -2,32 +2,19 @@ import "dotenv/config";
 import { autoIngestManga } from "../lib/scraper";
 import { closePool } from "../lib/db";
 
-const POPULAR_TITLES = [
-  "One Piece",
-  "Solo Leveling",
-  "Blue Lock",
-  "Frieren",
-  "Chainsaw Man"
-];
+const TARGET_MANGA_ID = "e7eabe96-aa17-476f-b431-2497d5e9d060"; // Black Clover
 
 async function runScraper() {
   console.log("=== Скрапер ажиллаж эхэллээ ===");
   
-  for (const title of POPULAR_TITLES) {
-    try {
-      console.log(`\n'${title}' хайж байна...`);
-      const searchRes = await fetch(`https://api.mangadex.org/manga?title=${encodeURIComponent(title)}&limit=1`);
-      const searchData = await searchRes.json();
-      
-      if (searchData.result === "ok" && searchData.data.length > 0) {
-        const mangaId = searchData.data[0].id;
-        await autoIngestManga(mangaId);
-      } else {
-        console.log(`'${title}' олдсонгүй.`);
-      }
-    } catch (err) {
-      console.error(`'${title}' дээр алдаа гарлаа:`, err);
-    }
+  try {
+    console.log(`\n'Black Clover' МН хэлээр татаж байна...`);
+    await autoIngestManga(TARGET_MANGA_ID, "mn");
+    
+    console.log(`\n'Black Clover' JA хэлээр татаж байна...`);
+    await autoIngestManga(TARGET_MANGA_ID, "ja");
+  } catch (err) {
+    console.error(`Алдаа гарлаа:`, err);
   }
 
   console.log("\n=== Бүх өгөгдөл амжилттай орлоо ===");
